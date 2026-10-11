@@ -38,11 +38,21 @@ test('setup page validates input, verifies the account and writes the env file',
   });
   try {
     const form = await fetch(pageInfo.url);
+    assert.equal(form.headers.get('referrer-policy'), 'same-origin');
     assert.equal(form.status, 200); assert.match(await form.text(), /애플리케이션 비밀번호/);
     assert.equal((await fetch(`${pageInfo.url}-other`)).status, 404);
     const post = (body: Record<string, string>) => fetch(`${pageInfo.url}/save`, {
-      method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams(body),
+      method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded', origin: new URL(pageInfo.url).origin }, body: new URLSearchParams(body),
     });
+    for (const origin of ['null', 'https://example.com']) {
+      const rejected = await fetch(`${pageInfo.url}/save`, {
+        method: 'POST', headers: { origin, 'content-type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ email: 'me@naver.com', password: 'app-pass-123' }),
+      });
+      assert.equal(rejected.status, 403);
+      assert.equal(verified.length, 0);
+      assert.equal(saved, false);
+    }
     const badEmail = await post({ email: 'me@gmail.com', password: 'abc', send: '1' });
     assert.match(await badEmail.text(), /@naver\.com/); assert.equal(verified.length, 0);
     const badPassword = await post({ email: 'me@naver.com', password: 'wrong-pass', send: '1' });

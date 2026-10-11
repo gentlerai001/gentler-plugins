@@ -113332,7 +113332,7 @@ function startSetupPage(options) {
   const server = createHttpServer(async (request, response) => {
     const url2 = new URL(request.url ?? "/", origin);
     const send = (status2, html) => {
-      response.writeHead(status2, { "content-type": "text/html; charset=utf-8", "cache-control": "no-store", "referrer-policy": "no-referrer", "x-frame-options": "DENY" });
+      response.writeHead(status2, { "content-type": "text/html; charset=utf-8", "cache-control": "no-store", "referrer-policy": "same-origin", "x-frame-options": "DENY" });
       response.end(html);
     };
     if (url2.pathname !== `/${token}` && url2.pathname !== `/${token}/save`)

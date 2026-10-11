@@ -119,7 +119,7 @@ export function startSetupPage(options: SetupOptions): Promise<SetupPage> {
   const server = createHttpServer(async (request: IncomingMessage, response: ServerResponse) => {
     const url = new URL(request.url ?? '/', origin);
     const send = (status: number, html: string) => {
-      response.writeHead(status, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'referrer-policy': 'no-referrer', 'x-frame-options': 'DENY' });
+      response.writeHead(status, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'referrer-policy': 'same-origin', 'x-frame-options': 'DENY' });
       response.end(html);
     };
     // Only this page's own form may post; a random token in the path keeps other local pages out.
